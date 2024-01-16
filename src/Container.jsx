@@ -20,7 +20,6 @@ import whiteNoiseImage from './assets/whiteNoise.png';
 
 
 const options = ['Pomodoro', 'Short Break', 'Long Break'];
-// Enable playback in silence mode
 Sound.setCategory('Playback');
 
 const Container = () => {
@@ -58,6 +57,26 @@ const Container = () => {
         whiteNoiseSound.play();
     });
 
+    const handleStartStop = () => {
+        setIsActive((prev) => !prev);
+
+        let watchStartStop = new Sound('done.mp3', Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.error('Failed to load ocean sound', error);
+                return;
+            }
+
+            watchStartStop.play();
+        });
+
+        watchStartStop.setVolume(50);
+    };
+
+    const handlePress = (ind) => {
+        const newTime = ind === 0 ? 25 : ind === 1 ? 5 : 15;
+        setCurrentTime(ind);
+        setTime(newTime * 60);
+    };
 
     useEffect(() => {
         rainSound.setVolume(10);
@@ -70,16 +89,6 @@ const Container = () => {
             whiteNoiseSound.stop();
         };
     }, []);
-
-    const handleStartStop = () => {
-        setIsActive((prev) => !prev);
-    };
-
-    const handlePress = (ind) => {
-        const newTime = ind === 0 ? 25 : ind === 1 ? 5 : 15;
-        setCurrentTime(ind);
-        setTime(newTime * 60);
-    };
 
     useEffect(() => {
         let interval = null;
@@ -115,15 +124,20 @@ const Container = () => {
                 ))}
             </View>
 
-            <View style={{ width: '100%', height: '50%', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{
+                width: '100%', height: '50%', flexDirection: 'row',
+                justifyContent: 'center', alignItems: 'center', marginBottom: 20,
+            }}>
                 <Timer time={time} />
             </View>
 
-            <TouchableOpacity onPress={handleStartStop} style={styles.buttonStyle}>
-                <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 20, fontFamily: 'serif' }}>
-                    {isActive ? 'STOP' : 'START'}
-                </Text>
-            </TouchableOpacity>
+            <View style={{ width: '100%', height: '7%', flexDirection: 'row', justifyContent: 'center', marginVertical: 20 }}>
+                <TouchableOpacity onPress={handleStartStop} style={styles.buttonStyle}>
+                    <Text style={{ fontWeight: 'bold', color: 'white', fontSize: 20, fontFamily: 'serif' }}>
+                        {isActive ? 'STOP' : 'START'}
+                    </Text>
+                </TouchableOpacity>
+            </View>
 
             <View style={styles.musicStyle}>
                 <View style={{ borderWidth: 2, borderColor: 'black', padding: 10, borderRadius: 100 }}>
@@ -151,11 +165,10 @@ const styles = StyleSheet.create({
         marginVertical: 30,
     },
     buttonStyle: {
-        width: '100%',
-        height: '9%',
+        width: '90%',
+        height: '100%',
         color: 'white',
         borderRadius: 10,
-        marginVertical: 30,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#333333',
